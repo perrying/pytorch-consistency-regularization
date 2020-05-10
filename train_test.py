@@ -237,8 +237,8 @@ def main(cfg, logger):
                 test_acc_list.append(mean_test_acc)
                 raw_acc_list.append(mean_test_acc)
 
-        torch.save(model.state_dict(), os.path.join(cfg.out_dir, "model_checkpoint.pth"))
-        torch.save(optimizer.state_dict(), os.path.join(cfg.out_dir, "optimizer_checkpoint.pth"))
+            torch.save(model.state_dict(), os.path.join(cfg.out_dir, "model_checkpoint.pth"))
+            torch.save(optimizer.state_dict(), os.path.join(cfg.out_dir, "optimizer_checkpoint.pth"))
 
     numpy.save(os.path.join(cfg.out_dir, "results"), test_acc_list)
     numpy.save(os.path.join(cfg.out_dir, "raw_results"), raw_acc_list)

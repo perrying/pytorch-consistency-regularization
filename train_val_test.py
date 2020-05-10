@@ -242,8 +242,8 @@ def main(cfg, logger):
                     mean_raw_acc, mean_test_acc, mean_test_loss = evaluation(model, eval_model, test_loader, device)
                     logger.info("test loss %f | test acc. %f | raw acc. %f", mean_test_loss, mean_test_acc, mean_raw_acc)
 
-        torch.save(model.state_dict(), os.path.join(cfg.out_dir, "model_checkpoint.pth"))
-        torch.save(optimizer.state_dict(), os.path.join(cfg.out_dir, "optimizer_checkpoint.pth"))
+            torch.save(model.state_dict(), os.path.join(cfg.out_dir, "model_checkpoint.pth"))
+            torch.save(optimizer.state_dict(), os.path.join(cfg.out_dir, "optimizer_checkpoint.pth"))
 
     logger.info("test accuracy %f", mean_test_acc)
 
