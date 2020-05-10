@@ -38,7 +38,7 @@ def get_args():
     parser.add_argument("--ema_teacher_warmup", action="store_true", help="warmup for mean teacher")
     parser.add_argument("--ema_teacher_factor", default=0.999, type=float, help="exponential mean avarage factor for mean teacher")
     parser.add_argument("--ema_apply_wd", action="store_true", help="apply weight decay to ema model")
-    parser.add_argument("--entropy_minimize", "-em", default=0, type=float, help="coefficient of entropy minimization")
+    parser.add_argument("--entropy_minimization", "-em", default=0, type=float, help="coefficient of entropy minimization")
     parser.add_argument("--threshold", default=None, type=float, help="pseudo label threshold")
     parser.add_argument("--sharpen", default=None, type=float, help="tempereture parameter for sharpening")
     parser.add_argument("--temp_softmax", default=None, type=float, help="tempereture for softmax")

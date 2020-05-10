@@ -98,8 +98,8 @@ def param_update(
     # calc total loss
     coef = scheduler.exp_warmup(cfg.coef, cfg.warmup_iter, cur_iteration+1)
     loss = L_supervised + coef * L_consistency
-    if cfg.entropy_minimize > 0:
-        loss -= cfg.entropy_minimize * \
+    if cfg.entropy_minimization > 0:
+        loss -= cfg.entropy_minimization * \
             (stu_unlabeled_weak_logits.softmax(1) * F.log_softmax(stu_unlabeled_weak_logits, 1)).sum(1).mean()
 
     # update parameters
