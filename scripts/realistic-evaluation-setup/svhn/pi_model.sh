@@ -1,0 +1,12 @@
+python3 train_val_test.py \
+--optimizer adam \
+--lr_decay step \
+--weight_decay 0 \
+--dataset svhn \
+--wa f.t.f \
+--warmup_iter 200000 \
+--lr 3e-4 \
+--coef 20 \
+-consis ms \
+--out_dir $1 \
+--num_labels $2

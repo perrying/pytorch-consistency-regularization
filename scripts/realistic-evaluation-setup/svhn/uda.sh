@@ -1,0 +1,16 @@
+python3 train_val_test.py \
+--optimizer adam \
+--lr_decay step \
+--weight_decay 0 \
+--dataset svhn \
+--wa f.t.f \
+--lr 3e-2 \
+--coef 1 \
+--strong_aug \
+--threshold 0.8 \
+--temp_softmax 0.4 \
+--warmup 0 \
+--weight_average \
+--tsa \
+--out_dir $1 \
+--num_labels $2
