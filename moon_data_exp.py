@@ -57,7 +57,7 @@ def gen_ssl_moon_dataset(seed, num_samples, labeled_sample, noise_factor=0.1):
     return labeled_l0, labeled_l1, unlabeled, label
 
 
-def scatter_plot_with_confidence(l0_data, l1_data, all_data, model, device, filename=None, show=False):
+def scatter_plot_with_confidence(l0_data, l1_data, all_data, model, device, out_dir=None, show=False):
     xx, yy = np.meshgrid(
         np.linspace(all_data[:,0].min()-0.1, all_data[:,0].max()+0.1, 1000),
         np.linspace(all_data[:,1].min()-0.1, all_data[:,1].max()+0.1, 1000))
@@ -72,7 +72,10 @@ def scatter_plot_with_confidence(l0_data, l1_data, all_data, model, device, file
     plt.ylim(-2, 2)
     # plt.grid()
     plt.tight_layout()
-    plt.show()
+    if out_dir is not None:
+        plt.savefig(os.path.join(out_dir, "confidence_with_labeled.png"))
+    if show:
+        plt.show()
     plt.contourf(xx, yy, outputs, alpha=0.5, cmap=plt.cm.jet)
     plt.scatter(l0_data[:,0], l0_data[:,1], c="blue")
     plt.scatter(l1_data[:,0], l1_data[:,1], c="red")
@@ -80,13 +83,13 @@ def scatter_plot_with_confidence(l0_data, l1_data, all_data, model, device, file
     plt.ylim(-2, 2)
     # plt.grid()
     plt.tight_layout()
-    if filename is not None:
-        plt.savefig(filename)
+    if out_dir is not None:
+        plt.savefig(os.path.join(out_dir, "confidence.png"))
     if show:
         plt.show()
 
 
-def scatter_plot(l0_data, l1_data, unlabeled_data, filename=None, show=False):
+def scatter_plot(l0_data, l1_data, unlabeled_data, out_dir=None, show=False):
     plt.scatter(unlabeled_data[:,0], unlabeled_data[:,1], c="gray")
     plt.scatter(l0_data[:,0], l0_data[:,1], c="blue")
     plt.scatter(l1_data[:,0], l1_data[:,1], c="red")
@@ -94,15 +97,18 @@ def scatter_plot(l0_data, l1_data, unlabeled_data, filename=None, show=False):
     plt.ylim(-2, 2)
     # plt.grid()
     plt.tight_layout()
-    plt.show()
+    if out_dir is not None:
+        plt.savefig(os.path.join(out_dir, "labeled_raw_data.png"))
+    if show:
+        plt.show()
     plt.scatter(l0_data[:,0], l0_data[:,1], c="blue")
     plt.scatter(l1_data[:,0], l1_data[:,1], c="red")
     plt.xlim(-2, 2)
     plt.ylim(-2, 2)
     # plt.grid()
     plt.tight_layout()
-    if filename is not None:
-        plt.savefig(filename)
+    if out_dir is not None:
+        plt.savefig(os.path.join(out_dir, "raw_data.png"))
     if show:
         plt.show()
 
@@ -135,8 +141,7 @@ def fit(cfg):
 
     labeled_data = np.concatenate([l0_data, l1_data])
 
-    filename = os.path.join(cfg.out_dir, "raw_data.png")
-    scatter_plot(l0_data, l1_data, u_data, filename, cfg.vis_data)
+    scatter_plot(l0_data, l1_data, u_data, cfg.out_dir, cfg.vis_data)
 
     tch_labeled_data = torch.from_numpy(labeled_data).float().to(device)
     tch_unlabeled_data = torch.from_numpy(u_data).float().to(device)
@@ -152,20 +157,23 @@ def fit(cfg):
 
         outputs = model(all_data)
         labeled_logits = outputs[:tch_labeled_data.shape[0]]
-        unlabeled_logits, unlabeled_logits_target = torch.chunk(outputs[tch_labeled_data.shape[0]:], 2, dim=2)
+        loss = F.cross_entropy(labeled_logits, label)
+        if cfg.coef > 0:
+            unlabeled_logits, unlabeled_logits_target = torch.chunk(outputs[tch_labeled_data.shape[0]:], 2, dim=2)
 
-        y, targets, mask = ssl_alg(
-            stu_preds = unlabeled_logits,
-            tea_logits = unlabeled_logits_target.detach(),
-            w_data = unlabeled_weak1,
-            s_data = unlabeled_weak2,
-            stu_forward = model,
-            tea_forward = model
-        )
+            y, targets, mask = ssl_alg(
+                stu_preds = unlabeled_logits,
+                tea_logits = unlabeled_logits_target.detach(),
+                w_data = unlabeled_weak1,
+                s_data = unlabeled_weak2,
+                stu_forward = model,
+                tea_forward = model
+            )
 
-        L_consistency = consistency(y, targets, mask)
-        L_supervised = F.cross_entropy(labeled_logits, label)
-        loss = L_supervised + cfg.coef * L_consistency
+            L_consistency = consistency(y, targets, mask)
+            loss += cfg.coef * L_consistency
+        else:
+            L_consistency = torch.zeros_like(loss)
 
         if cfg.entropy_minimize > 0:
             loss -= cfg.entropy_minimize * (unlabeled_logits.softmax(1) * F.log_softmax(unlabeled_logits, 1)).sum(1).mean()
@@ -177,8 +185,7 @@ def fit(cfg):
         loss.backward()
         optimizer.step()
 
-    filename = os.path.join(cfg.out_dir, "results.png")
-    scatter_plot_with_confidence(l0_data, l1_data, all_data, model, device, filename, cfg.vis_data)
+    scatter_plot_with_confidence(l0_data, l1_data, all_data, model, device, cfg.out_dir, cfg.vis_data)
 
 
 if __name__ == "__main__":
