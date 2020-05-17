@@ -8,7 +8,7 @@ from . import dataset_class
 from ..augmentation.builder import gen_strong_augmentation, gen_weak_augmentation
 
 
-def __val_labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=None, logger=None):
+def __val_labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=None):
     num_validation = int(np.round(len(train_data["images"]) * cfg.val_ratio))
 
     np.random.seed(cfg.seed)
@@ -24,23 +24,10 @@ def __val_labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_da
         ul_train_data["images"] = np.concatenate([ul_train_data["images"], ul_data["images"]], 0)
         ul_train_data["labels"] = np.concatenate([ul_train_data["labels"], ul_data["labels"]], 0)
 
-    if logger is not None:
-        logger.info("number of :\n \
-            training data: %d\n \
-            labeled data: %d\n \
-            unlabeled data: %d\n \
-            validation data: %d\n \
-            test data: %d",
-            len(train_data["images"]),
-            len(l_train_data["images"]),
-            len(ul_train_data["images"]),
-            len(val_data["images"]),
-            len(test_data["images"]))
-
     return val_data, l_train_data, ul_train_data
 
 
-def __labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=None, logger=None):
+def __labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=None):
     np.random.seed(cfg.seed)
 
     permutation = np.random.permutation(len(train_data["images"]))
@@ -52,17 +39,6 @@ def __labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=N
     if ul_data is not None:
         ul_train_data["images"] = np.concatenate([ul_train_data["images"], ul_data["images"]], 0)
         ul_train_data["labels"] = np.concatenate([ul_train_data["labels"], ul_data["labels"]], 0)
-
-    if logger is not None:
-        logger.info("number of :\n \
-            training data: %d\n \
-            labeled data: %d\n \
-            unlabeled data: %d\n \
-            test data: %d",
-            len(train_data["images"]),
-            len(l_train_data["images"]),
-            len(ul_train_data["images"]),
-            len(test_data["images"]))
 
     return l_train_data, ul_train_data
 
@@ -105,11 +81,27 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
 
     if validation_split:
         val_data, l_train_data, ul_train_data = __val_labeled_unlabeled_split(
-            cfg, train_data, test_data, num_classes, ul_train_data, logger)
+            cfg, train_data, test_data, num_classes, ul_train_data)
     else:
         l_train_data, ul_train_data = __labeled_unlabeled_split(
-            cfg, train_data, test_data, num_classes, ul_train_data, logger)
+            cfg, train_data, test_data, num_classes, ul_train_data)
+        val_data = None
 
+    ul_train_data["images"] = np.concatenate([ul_train_data["images"], l_train_data["images"]], 0)
+    ul_train_data["labels"] = np.concatenate([ul_train_data["labels"], l_train_data["labels"]], 0)
+
+    if logger is not None:
+        logger.info("number of :\n \
+            training data: %d\n \
+            labeled data: %d\n \
+            unlabeled data: %d\n \
+            validataion data: %d\n \
+            test data: %d",
+            len(train_data["images"]),
+            len(l_train_data["images"]),
+            len(ul_train_data["images"]),
+            0 if val_data is None else len(val_data),
+            len(test_data["images"]))
 
     labeled_train_data = dataset_class.LabeledDataset(l_train_data)
     unlabeled_train_data = dataset_class.UnlabeledDataset(ul_train_data)
