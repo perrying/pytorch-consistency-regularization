@@ -100,7 +100,7 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
             len(train_data["images"]),
             len(l_train_data["images"]),
             len(ul_train_data["images"]),
-            0 if val_data is None else len(val_data),
+            0 if val_data is None else len(val_data["images"]),
             len(test_data["images"]))
 
     labeled_train_data = dataset_class.LabeledDataset(l_train_data)
