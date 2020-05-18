@@ -11,6 +11,7 @@ def get_args():
     parser.add_argument("--random_split", action="store_true", help="random sampleing from training data for validation")
     parser.add_argument("--num_workers", default=8, type=int, help="number of thread for CPU parallel")
     parser.add_argument("--whiten", action="store_true", help="use whitening as preprocessing")
+    parser.add_argument("--zca", action="store_true", help="use zca whitening as preprocessing")
     # augmentation config
     parser.add_argument("--labeled_aug", default="WA", choices=['WA', 'RA'], type=str, help="type of augmentation for labeled data")
     parser.add_argument("--unlabeled_aug", default="WA", choices=['WA', 'RA'], type=str, help="type of augmentation for unlabeled data")

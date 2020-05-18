@@ -7,19 +7,24 @@ from .rand_augment import RandAugment
 
 class ReduceChannelwithNormalize:
     """ Reduce alpha channel of RGBA """
-    def __init__(self, mean, std):
+    def __init__(self, mean, scale, zca):
         self.mean = mean
-        self.std= std
+        self.scale = scale
+        self.zca = zca
 
     def __call__(self, tch_img):
         rgb = tch_img[:3]
         i1, i2 = torch.where(tch_img[3] == 0)
-        rgb = tt.functional.normalize(rgb, self.mean, self.std, True)
+        if self.zca:
+            rgb = aug_pool.GCN()(tch_img)
+            rgb = aug_pool.ZCA(self.mean, self.scale)(rgb)
+        else:
+            rgb = tt.functional.normalize(rgb, self.mean, self.scale, True)
         rgb[:, i1, i2] = 0
         return rgb
 
     def __repr__(self):
-        return f"ReduceChannelwithNormalize(mean={self.mean}, std={self.std})"
+        return f"ReduceChannelwithNormalize(mean={self.mean}, scale={self.scale})"
 
 
 class RGB2RGBA:
@@ -39,10 +44,11 @@ class StrongAugmentation:
         self,
         img_size: int,
         mean: list,
-        std: list,
+        scale: list,
         flip: bool,
         crop: bool,
         alg: str = "fixmatch",
+        zca: bool = False,
         cutout: bool = True,
     ):
         augmentations = [tt.ToPILImage()]
@@ -56,7 +62,7 @@ class StrongAugmentation:
             RGB2RGBA(),
             RandAugment(alg=alg),
             tt.ToTensor(),
-            ReduceChannelwithNormalize(mean, std)
+            ReduceChannelwithNormalize(mean, scale, zca)
         ]
         if cutout:
             augmentations += [aug_pool.TorchCutout(16)]
@@ -79,17 +85,22 @@ class WeakAugmentation:
         self,
         img_size: int,
         mean: list,
-        std: list,
+        scale: list,
         flip=True,
         crop=True,
-        noise=True
+        noise=True,
+        zca=False
     ):
         augmentations = [tt.ToPILImage()]
         if flip:
             augmentations.append(tt.RandomHorizontalFlip())
         if crop:
             augmentations.append(tt.RandomCrop(img_size, int(img_size*0.125), padding_mode="reflect"))
-        augmentations += [tt.ToTensor(), tt.Normalize(mean, std, True)]
+        augmentations += [tt.ToTensor()]
+        if zca:
+            augmentations += [aug_pool.GCN(), aug_pool.ZCA(mean, scale)]
+        else:
+            augmentations += [tt.Normalize(mean, scale, True)]
         if noise:
             augmentations.append(aug_pool.GaussianNoise())
         self.augmentations = tt.Compose(augmentations)

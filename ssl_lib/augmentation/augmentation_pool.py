@@ -214,3 +214,30 @@ class RandomCrop:
 
     def __repr__(self):
         return f"RandomCrop(padding={self.pad})"
+
+
+class ZCA:
+    def __init__(self, mean, scale):
+        self.mean = mean
+        self.scale = scale
+
+    def __call__(self, x):
+        c, h, w = x.shape
+        x = x.reshape(c, -1)
+        x = torch.mm(x - self.mean, decomp)
+        return x.reshape(c, h, w)
+
+
+class GCN:
+    """global contrast normalization"""
+    def __init__(self, multiplier=55, eps=1e-10):
+        self.multiplier = multiplier
+        self.eps = eps
+
+    def __call__(self, x):
+        x -= x.mean()
+        norm = x.pow(2).sum().sqrt()
+        norm[norm < self.eps] = 1
+        return self.multiplier * images / norm
+
+

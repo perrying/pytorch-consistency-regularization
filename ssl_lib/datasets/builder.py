@@ -95,7 +95,7 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
             training data: %d\n \
             labeled data: %d\n \
             unlabeled data: %d\n \
-            validataion data: %d\n \
+            validation data: %d\n \
             test data: %d",
             len(train_data["images"]),
             len(l_train_data["images"]),
@@ -113,11 +113,13 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
 
     if cfg.whiten:
         mean = train_data.mean((0, 1, 2)) / 255.
-        std = train_data.std((0, 1, 2)) / 255.
+        scale = train_data.std((0, 1, 2)) / 255.
+    elif cfg.zca:
+        mean, scale = utils.get_zca_normalization_param(train_data)
     else:
         # from [0, 1] to [-1, 1]
         mean = [0.5, 0.5, 0.5]
-        std = [0.5, 0.5, 0.5]
+        scale = [0.5, 0.5, 0.5]
 
     # set augmentation
     # RA: RandAugment, WA: Weak Augmentation
@@ -126,18 +128,20 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
     flags = [True if b == "t" else False for b in cfg.wa.split(".")]
 
     if cfg.labeled_aug == "RA":
-        labeled_augmentation = gen_strong_augmentation(img_size, mean, std, flags[0], flags[1], randauglist)
+        labeled_augmentation = gen_strong_augmentation(
+            img_size, mean, scale, flags[0], flags[1], randauglist, cfg.zca)
     elif cfg.labeled_aug == "WA":
-        labeled_augmentation = gen_weak_augmentation(img_size, mean, std, *flags)
+        labeled_augmentation = gen_weak_augmentation(img_size, mean, scale, *flags, cfg.zca)
     else:
         raise NotImplementedError
 
     labeled_train_data.transform = labeled_augmentation
 
     if cfg.unlabeled_aug == "RA":
-        unlabeled_augmentation = gen_strong_augmentation(img_size, mean, std, flags[0], flags[1], randauglist)
+        unlabeled_augmentation = gen_strong_augmentation(
+            img_size, mean, scale, flags[0], flags[1], randauglist, cfg.zca)
     elif cfg.unlabeled_aug == "WA":
-        unlabeled_augmentation = gen_weak_augmentation(img_size, mean, std, *flags)
+        unlabeled_augmentation = gen_weak_augmentation(img_size, mean, scale, *flags, cfg.zca)
     else:
         raise NotImplementedError
 
@@ -150,12 +154,13 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
     unlabeled_train_data.weak_augmentation = unlabeled_augmentation
 
     if cfg.strong_aug:
-        strong_augmentation = gen_strong_augmentation(img_size, mean, std, flags[0], flags[1], randauglist)
+        strong_augmentation = gen_strong_augmentation(
+            img_size, mean, scale, flags[0], flags[1], randauglist, cfg.zca)
         unlabeled_train_data.strong_augmentation = strong_augmentation
         if logger is not None:
             logger.info(strong_augmentation)
 
-    test_transform = transforms.Compose([transforms.Normalize(mean, std, True)])
+    test_transform = transforms.Compose([transforms.Normalize(mean, scale, True)])
 
     test_data = dataset_class.LabeledDataset(test_data, test_transform)
 
