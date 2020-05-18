@@ -6,7 +6,7 @@ from torchvision import transforms
 from . import utils
 from . import dataset_class
 from ..augmentation.builder import gen_strong_augmentation, gen_weak_augmentation
-from ..augmentation.augmentation_pool import numpy_batch_gcn
+from ..augmentation.augmentation_pool import numpy_batch_gcn, ZCA, GCN
 
 
 def __val_labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=None):
@@ -161,7 +161,10 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
         if logger is not None:
             logger.info(strong_augmentation)
 
-    test_transform = transforms.Compose([transforms.Normalize(mean, scale, True)])
+    if cfg.zca:
+        test_transform = transforms.Compose([GCN(), ZCA(mean, scale)])
+    else:
+        test_transform = transforms.Compose([transforms.Normalize(mean, scale, True)])
 
     test_data = dataset_class.LabeledDataset(test_data, test_transform)
 
