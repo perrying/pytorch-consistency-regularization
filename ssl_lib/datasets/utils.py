@@ -114,7 +114,8 @@ def dataset_split(data, num_data, num_classes, random=False):
 
 def get_zca_normalization_param(images, scale=0.1, eps=1e-10):
     n_data, height, width, channels = images.shape
-    images = images.reshape(n_data, height*width*channels)
+    images = images.transpose(0, 3, 1, 2)
+    images = images.reshape(n_data, channels * height * width)
     image_cov = np.cov(images, rowvar=False)
     U, S, _ = np.linalg.svd(image_cov + scale * np.eye(image_cov.shape[0]))
     zca_decomp = np.dot(U, np.dot(np.diag(1/np.sqrt(S + eps)), U.T))

@@ -218,14 +218,17 @@ class RandomCrop:
 
 class ZCA:
     def __init__(self, mean, scale):
-        self.mean = mean
-        self.scale = scale
+        self.mean = torch.from_numpy(mean).float()
+        self.scale = torch.from_numpy(scale).float()
 
     def __call__(self, x):
         c, h, w = x.shape
-        x = x.reshape(c, -1)
-        x = torch.mm(x - self.mean, decomp)
+        x = x.reshape(-1)
+        x = (x - self.mean) @ self.scale
         return x.reshape(c, h, w)
+
+    def __repr__(self):
+        return f"ZCA()"
 
 
 class GCN:
@@ -238,6 +241,7 @@ class GCN:
         x -= x.mean()
         norm = x.pow(2).sum().sqrt()
         norm[norm < self.eps] = 1
-        return self.multiplier * images / norm
+        return self.multiplier * x / norm
 
-
+    def __repr__(self):
+        return f"GCN(multiplier={self.multiplier}, eps={self.eps})"
