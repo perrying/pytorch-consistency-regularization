@@ -239,9 +239,21 @@ class GCN:
 
     def __call__(self, x):
         x -= x.mean()
-        norm = x.pow(2).sum().sqrt()
+        norm = x.norm(2)
         norm[norm < self.eps] = 1
         return self.multiplier * x / norm
 
     def __repr__(self):
         return f"GCN(multiplier={self.multiplier}, eps={self.eps})"
+
+
+"""
+For numpy.array
+"""
+def numpy_batch_gcn(images, multiplier=55, eps=1e-10):
+    # global contrast normalization
+    images = images.astype(np.float)
+    images -= images.mean(axis=(1,2,3), keepdims=True)
+    per_image_norm = np.sqrt(np.square(images).sum((1,2,3), keepdims=True))
+    per_image_norm[per_image_norm < eps] = 1
+    return multiplier * images / per_image_norm

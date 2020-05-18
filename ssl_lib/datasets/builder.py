@@ -6,6 +6,7 @@ from torchvision import transforms
 from . import utils
 from . import dataset_class
 from ..augmentation.builder import gen_strong_augmentation, gen_weak_augmentation
+from ..augmentation.augmentation_pool import numpy_batch_gcn
 
 
 def __val_labeled_unlabeled_split(cfg, train_data, test_data, num_classes, ul_data=None):
@@ -115,7 +116,7 @@ def gen_dataloader(root, dataset, validation_split, cfg, logger=None):
         mean = train_data.mean((0, 1, 2)) / 255.
         scale = train_data.std((0, 1, 2)) / 255.
     elif cfg.zca:
-        mean, scale = utils.get_zca_normalization_param(train_data)
+        mean, scale = utils.get_zca_normalization_param(numpy_batch_gcn(train_data))
     else:
         # from [0, 1] to [-1, 1]
         mean = [0.5, 0.5, 0.5]
