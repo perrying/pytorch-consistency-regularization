@@ -1,6 +1,7 @@
 import random
 import torch
 import torch.nn.functional as F
+import numpy as np
 
 from PIL import ImageOps, ImageEnhance, ImageFilter, Image
 
