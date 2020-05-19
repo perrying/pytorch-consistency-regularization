@@ -1,4 +1,4 @@
-# Consistency Regularizations for Semi-supervised Learning with PyTorch
+# Consistency Regularization for Semi-supervised Learning with PyTorch
 This repositrory includes consistency regularization algorithms for semi-supervised learning:
 - Pi-Model
 - Pseudo-label
@@ -48,6 +48,7 @@ WIP
 NOTE: Our implementation is different from Oliver et al. 2018 as follows:
 1. we use not only purely unlabeled data, but also labeled data as unlabeled data. (following Sohn et al. 2020)
 2. our VAT implementation follows Miyato et al., but Oliver et al. use KLD with different directions as the loss function.
+see [issue](https://github.com/brain-research/realistic-ssl-evaluation/issues/27).
 3. parameter initialization of WRN-28. (following Sohn et al. 2020)
 
 If you would like to evaluate the same conditions as Oliver et al., please see [this repo](https://github.com/perrying/realistic-ssl-evaluation-pytorch).
@@ -60,9 +61,9 @@ If you would like to evaluate the same conditions as Oliver et al., please see [
 
 # Citation
 ```
-@misc{ssl-consistency-regularization,
+@misc{suzuki2020consistency,
     author = {Teppei Suzuki},
-    title = {Consistency Regularizations for Semi-supervised Learning with PyTorch},
+    title = {Consistency Regularization for Semi-supervised Learning with PyTorch},
     year = {2020},
     publisher = {GitHub},
     journal = {GitHub repository},
