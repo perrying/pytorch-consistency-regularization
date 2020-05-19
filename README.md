@@ -37,6 +37,26 @@ and ```train_val_test.py``` evaluates the test accuracy of the best model on val
 
 # Performance
 WIP
+||Oliver et al. 2018||this repo| |
+|--|--|--|--|--|
+||CIFAR-10 4000 labels|SVHN 1000 labels|CIFAR-10 4000 labels|SVHN 1000 labels|
+|Supervised|20.26 ±0.38|12.83 ±0.47|19.85|11.03
+|Pi-Model|16.37 ±0.63|7.19 ±0.27|14.84|N/A
+|Mean Teacher|15.87 ±0.28|5.65 ±0.47|N/A|N/A
+|VAT|13.13 ±0.39|5.35 ±0.19|N/A|6.38
+
+NOTE: Our implementation is different from Oliver et al. 2018 as follows:
+1. we use not only purely unlabeled data, but also labeled data as unlabeled data. (following Sohn et al. 2020)
+2. our VAT implementation follows Miyato et al., but Oliver et al. use KLD with different directions as the loss function.
+3. parameter initialization of WRN-28. (following Sohn et al. 2020)
+
+If you would like to evaluate the same conditions as Oliver et al., please see [this repo](https://github.com/perrying/realistic-ssl-evaluation-pytorch).
+
+||Sohn et al. 2020||this repo| |
+|--|--|--|--|--|
+||CIFAR-10 250 labels|CIFAR-10 4000 labels|CIFAR-10 250 labels|CIFAR-10 4000 labels|
+|UDA|8.82±1.08|4.88±0.18 | N/A | N/A
+|FixMatch|5.07±0.65|4.26±0.05| N/A | N/A
 
 # Citation
 ```
