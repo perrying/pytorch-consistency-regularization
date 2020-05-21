@@ -51,7 +51,7 @@ NOTE: Our implementation is different from Oliver+ 2018 as follows:
 see [issue](https://github.com/brain-research/realistic-ssl-evaluation/issues/27).
 3. parameter initialization of WRN-28. (following Sohn+ 2020)
 
-If you would like to evaluate the same conditions as Oliver+ 2018, please see [this repo](https://github.com/perrying/realistic-ssl-evaluation-pytorch).
+If you would like to evaluate the model with the same conditions as Oliver+ 2018, please see [this repo](https://github.com/perrying/realistic-ssl-evaluation-pytorch).
 
 ||Sohn+ 2020||this repo| |
 |--|--|--|--|--|
@@ -67,7 +67,7 @@ If you would like to evaluate the same conditions as Oliver+ 2018, please see [t
     year = {2020},
     publisher = {GitHub},
     journal = {GitHub repository},
-    howpublished = {\url{https://github.com/perrying/ssl-consistency-regularization}},
+    howpublished = {\url{https://github.com/perrying/pytorch-consistency-regularization}},
 }
 ```
 
