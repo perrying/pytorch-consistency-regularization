@@ -47,7 +47,7 @@ WIP
 
 NOTE: Our implementation is different from Oliver+ 2018 as follows:
 1. we use not only purely unlabeled data, but also labeled data as unlabeled data. (following Sohn+ 2020)
-2. our VAT implementation follows Miyato et al., but Oliver et al. use KLD with different directions as the loss function.
+2. our VAT implementation follows Miyato+, but Oliver+ use KLD with different directions as the loss function.
 see [issue](https://github.com/brain-research/realistic-ssl-evaluation/issues/27).
 3. parameter initialization of WRN-28. (following Sohn+ 2020)
 
@@ -56,8 +56,10 @@ If you would like to evaluate the model with the same conditions as Oliver+ 2018
 ||Sohn+ 2020||this repo| |
 |--|--|--|--|--|
 ||CIFAR-10 250 labels|CIFAR-10 4000 labels|CIFAR-10 250 labels|CIFAR-10 4000 labels|
-|UDA|8.82±1.08|4.88±0.18 | N/A | N/A
-|FixMatch|5.07±0.65|4.26±0.05| N/A | N/A
+|UDA|8.82±1.08|4.88±0.18 | N/A | 6.32
+|FixMatch|5.07±0.65|4.26±0.05| N/A | 6.84
+
+reported error rates are the median of last 20 checkpoints
 
 # Citation
 ```
