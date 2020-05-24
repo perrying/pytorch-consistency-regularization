@@ -83,8 +83,7 @@ def param_update(
         y, targets, mask = ssl_alg(
             stu_preds = stu_unlabeled_strong_logits,
             tea_logits = tea_unlabeled_weak_logits.detach(),
-            w_data = ul_weak_data,
-            s_data = ul_strong_data,
+            data = ul_strong_data,
             stu_forward = forward_func,
             tea_forward = t_forward_func
         )
@@ -235,7 +234,7 @@ def main(cfg, logger):
                 mean_raw_acc, mean_test_acc, mean_test_loss = evaluation(model, eval_model, test_loader, device)
                 logger.info("test loss %f | test acc. %f | raw acc. %f", mean_test_loss, mean_test_acc, mean_raw_acc)
                 test_acc_list.append(mean_test_acc)
-                raw_acc_list.append(mean_test_acc)
+                raw_acc_list.append(mean_raw_acc)
 
             torch.save(model.state_dict(), os.path.join(cfg.out_dir, "model_checkpoint.pth"))
             torch.save(optimizer.state_dict(), os.path.join(cfg.out_dir, "optimizer_checkpoint.pth"))
