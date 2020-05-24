@@ -1,4 +1,4 @@
-# Consistency Regularizations for Semi-supervised Learning with PyTorch
+# Consistency Regularization for Semi-supervised Learning with PyTorch
 This repositrory includes consistency regularization algorithms for semi-supervised learning:
 - Pi-Model
 - Pseudo-label
@@ -8,7 +8,7 @@ This repositrory includes consistency regularization algorithms for semi-supervi
 - Unsupervised Data Augmentation
 - FixMatch (with RandAugment)
 
-Training and evaluation follow "Oliver et al., 2018" and FixMatch.
+Training and evaluation setting follow Oliver+ 2018 and FixMatch.
 
 # Requirements
 - Python >= 3.7
@@ -28,25 +28,48 @@ sh ./scripts/fixmatch-setup/cifar10/fixmatch.sh ./results/cifar10-fixmatch-250la
 ```
 
 The scripts in ```scripts/fixmatch-setup``` are for training and evaluating a model with the FixMatch setting,
-and the scripts in ```scripst/realistic-evaluation-setup``` are for training and evaluating a model with the "Oliver et al., 2018" setting.
+and the scripts in ```scripst/realistic-evaluation-setup``` are for training and evaluating a model with the Oliver+ 2018 setting.
 
 If yor would like to train a model with own setting, please see ```parser.py```.
 
 NOTE: ```train_test.py``` evaluates a model performance as median of last [1, 10, 20, 50] checkpoint accuracies (FixMatch setting),
-and ```train_val_test.py``` evaluates the test accuracy of the best model on validation data (Oliver et al. 2018 setting).
+and ```train_val_test.py``` evaluates the test accuracy of the best model on validation data (Oliver+ 2018 setting).
 
 # Performance
 WIP
+||Oliver+ 2018||this repo| |
+|--|--|--|--|--|
+||CIFAR-10 4000 labels|SVHN 1000 labels|CIFAR-10 4000 labels|SVHN 1000 labels|
+|Supervised|20.26 ±0.38|12.83 ±0.47|19.85|11.03
+|Pi-Model|16.37 ±0.63|7.19 ±0.27|14.84|7.87
+|Mean Teacher|15.87 ±0.28|5.65 ±0.47|14.28|5.83
+|VAT|13.13 ±0.39|5.35 ±0.19|12.15|6.38
+
+NOTE: Our implementation is different from Oliver+ 2018 as follows:
+1. we use not only purely unlabeled data, but also labeled data as unlabeled data. (following Sohn+ 2020)
+2. our VAT implementation follows Miyato+, but Oliver+ use KLD with different directions as the loss function.
+see [issue](https://github.com/brain-research/realistic-ssl-evaluation/issues/27).
+3. parameter initialization of WRN-28. (following Sohn+ 2020)
+
+If you would like to evaluate the model with the same conditions as Oliver+ 2018, please see [this repo](https://github.com/perrying/realistic-ssl-evaluation-pytorch).
+
+||Sohn+ 2020||this repo| |
+|--|--|--|--|--|
+||CIFAR-10 250 labels|CIFAR-10 4000 labels|CIFAR-10 250 labels|CIFAR-10 4000 labels|
+|UDA|8.82±1.08|4.88±0.18 | 10.08 | 6.32
+|FixMatch|5.07±0.65|4.26±0.05| 9.88 | 6.84
+
+reported error rates are the median of last 20 checkpoints
 
 # Citation
 ```
-@misc{ssl-consistency-regularization,
+@misc{suzuki2020consistency,
     author = {Teppei Suzuki},
-    title = {Consistency Regularizations for Semi-supervised Learning with PyTorch},
+    title = {Consistency Regularization for Semi-supervised Learning with PyTorch},
     year = {2020},
     publisher = {GitHub},
     journal = {GitHub repository},
-    howpublished = {\url{https://github.com/perrying/ssl-consistency-regularization}},
+    howpublished = {\url{https://github.com/perrying/pytorch-consistency-regularization}},
 }
 ```
 
