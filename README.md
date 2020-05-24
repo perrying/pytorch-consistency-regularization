@@ -56,8 +56,8 @@ If you would like to evaluate the model with the same conditions as Oliver+ 2018
 ||Sohn+ 2020||this repo| |
 |--|--|--|--|--|
 ||CIFAR-10 250 labels|CIFAR-10 4000 labels|CIFAR-10 250 labels|CIFAR-10 4000 labels|
-|UDA|8.82±1.08|4.88±0.18 | N/A | 6.32
-|FixMatch|5.07±0.65|4.26±0.05| N/A | 6.84
+|UDA|8.82±1.08|4.88±0.18 | 10.08 | 6.32
+|FixMatch|5.07±0.65|4.26±0.05| 9.88 | 6.84
 
 reported error rates are the median of last 20 checkpoints
 
