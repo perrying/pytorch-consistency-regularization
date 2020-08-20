@@ -1,4 +1,4 @@
-# Consistency Regularization for Semi-supervised Learning with PyTorch
+# [WIP]Consistency Regularization for Semi-supervised Learning with PyTorch
 This repositrory includes consistency regularization algorithms for semi-supervised learning:
 - Pi-Model
 - Pseudo-label
